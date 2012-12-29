@@ -84,6 +84,32 @@ public class SudokuTest {
 	assertEquals(9, s.getValue(8, 8));
     }
     @Test
+    public void testCopyConstructor() {
+	Sudoku orig = new Sudoku(
+		"534678912" + 
+		"672195348" + 
+		"198342567" +
+		"859761423" + 
+		"426853791" + 
+		"713924856" + 
+		"961537284" + 
+		"287419635" + 
+		"000000000");
+	Sudoku s = new Sudoku(orig);
+	// 345286179
+	assertEquals(3, s.getValue(0, 8));
+	assertEquals(9, s.getValue(8, 8));
+	assertEquals(0, s.getCellsLeft());
+    }
+    @Test
+    public void testCopyConstructor2() {
+	Sudoku orig = new Sudoku();
+	orig.setNumber(0, 0, 5);
+	Sudoku s = new Sudoku(orig);
+	orig.setNumber(1, 0, 3);
+	s.setNumber(1, 0, 6);
+    }
+    @Test
     public void testSetRemove() {
 	Sudoku s = new Sudoku();
 	s.setNumber(0, 0, 5);

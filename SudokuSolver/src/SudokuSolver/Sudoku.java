@@ -24,7 +24,6 @@ public class Sudoku {
     }
     public Sudoku(String s) {
 	this();
-	System.out.println("he");
 	for (int i = 0; i < SIZE*SIZE; i++) {
 	    	int v = Character.getNumericValue(s.charAt(i));
 	    	if(v > 0 && v < 10) {
@@ -35,7 +34,16 @@ public class Sudoku {
 	    	}
 	}
     }
-    public void setNumber(int x, int y, int num) {
+    
+    public Sudoku(Sudoku s) {
+	for (int i = 0; i < SIZE; i++) {
+	    for (int j = 0; j < SIZE; j++) {
+		sudoku[i][j] = new HashSet<Integer>(s.getCell(i, j));
+	    }
+	}
+	cellsLeft = s.getCellsLeft();
+    }
+    public boolean setNumber(int x, int y, int num) {
 	if(!sudoku[x][y].contains(num))
 	    throw new IllegalArgumentException("The number is used somewhere else in the box/row/column.");
 	/*
@@ -46,32 +54,41 @@ public class Sudoku {
 	    cellsLeft--;
 	}
 	sudoku[x][y].clear();
-	removeFromColumn(x, num);
-	removeFromRow(y, num);
-	removeFromBox(x, y, num);
+	boolean valid = removeFromColumn(x, num)  && removeFromRow(y, num) && removeFromBox(x, y, num);
 	sudoku[x][y].add(num);
+	return valid;
     }
-    private void removeFromRow(int y, int num) {
+    private boolean removeFromRow(int y, int num) {
+	boolean valid = true;
 	for (int i = 0; i < 9; i++) {
-	    remove(i, y, num);
+	    if(!remove(i, y, num)) {
+		valid = false;
+	    }
 	}
+	return valid;
     }
-    private void removeFromColumn(int x, int num) {
+    private boolean removeFromColumn(int x, int num) {
+	boolean valid = true;
 	for (int i = 0; i < 9; i++) {
-	    remove(x, i, num);
+	    if(!remove(x, i, num)) {
+		valid = false;
+	    }
 	}
+	return valid;
     }
     
-    private void removeFromBox(int x, int y, int num) {
+    private boolean removeFromBox(int x, int y, int num) {
 	x = (x/BOX_SIZE)*BOX_SIZE;
 	y = (y/BOX_SIZE)*BOX_SIZE;
-	
+	boolean valid = true;
 	for (int i = 0; i < BOX_SIZE; i++) {
 	    for (int j = 0; j < BOX_SIZE; j++) {
-		remove(x+i,y+j,num);
+		if(!remove(x+i,y+j,num)) {
+		    valid = false;
+		}
 	    }
-	    
 	}
+	return valid;
     }
     public int getValue(int x, int y) {
 	Set<Integer> c = getCell(x, y);
@@ -79,12 +96,15 @@ public class Sudoku {
 	    return (int) c.toArray()[0];
 	return 0;
     }
-    private void remove(int x, int y, int num) {
+    private boolean remove(int x, int y, int num) {
 	if (sudoku[x][y].remove(num)) { // Contained the element
-	    if (sudoku[x][y].size() == 1) {
+	    int size = sudoku[x][y].size();
+	    if (size == 1) {
 		cellsLeft--;
 	    }
+	    return size > 0;
 	}
+	return true;
     }
     public Set<Integer> getCell(int x, int y) {
 	return sudoku[x][y];
