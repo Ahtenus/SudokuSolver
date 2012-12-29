@@ -120,7 +120,10 @@ public class Sudoku {
 	String s = "";
         for (int i = 0; i < SIZE; i++) {
 	    for (int j = 0; j < SIZE; j++) {
-		s += ""+getValue(j, i);
+		s += (j%BOX_SIZE == 0 && j > 0 ? "|":"")+getValue(j, i);
+	    }
+	    if((i+1)%BOX_SIZE == 0) {
+		s += "\n---+---+---";
 	    }
 	    s += "\n";
 	}
